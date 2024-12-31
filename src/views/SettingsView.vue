@@ -1,14 +1,18 @@
 <script setup>
 import Header from '../components/Header.vue';
 import { useStore } from '../store';
+import { updateProfile, updatePassword } from 'firebase/auth';
+import { auth } from "../firebase";
+import { ref } from 'vue';
 
 const store = useStore();
 console.log(store);
 
-const saveChanges = () => {
+const saveChanges = async () => {
     store.firstName = firstName.value;
     store.lastName = lastName.value;
-}
+    await updateProfile(store.user, { displayName: `${firstName.value} ${lastName.value}` });
+};
 </script>
 
 <template>
@@ -17,11 +21,13 @@ const saveChanges = () => {
     <div class="info">
         <div class="form-group">
             <div class="info-label">First Name: </div>
-            <input id="firstName" type="text" :value="store.firstName" class="form-input" />
+            <input id="firstName" type="text" :value="firstName" class="form-input" />
             <div class="info-label">Last Name: </div>
-            <input id="lastName" type="text" :value="store.lastName" class="form-input" />
+            <input id="lastName" type="text" :value="lastName" class="form-input" />
             <div class="info-label">Email: </div>
-            <input id="email" type="text" :value="store.email" class="form-input" readonly />
+            <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
+            <div class="info-label">Password:</div>
+            <input id="email" type="text" :value="store.user.password" class="form-input" />
             <button @click="saveChanges">Save Changes</button>
         </div>
     </div>

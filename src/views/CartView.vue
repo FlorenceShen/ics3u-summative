@@ -1,8 +1,23 @@
 <script setup>
 import Header from '../components/Header.vue';
 import { useStore } from '../store';
+import { ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
+
+const message = ref(false);
 
 const store = useStore();
+
+const checkout = () => {
+    store.cart = null;
+    localStorage.clear();
+    message.value = true;
+    onBeforeRouteLeave(() => {
+        showMessage.value = false;
+    });
+}
+
+
 </script>
 
 <template>
@@ -14,7 +29,10 @@ const store = useStore();
             <h1>{{ value.title }}</h1>
             <button @click="store.cart.delete(key)">Remove</button>
         </div>
+        <button @click="checkout">Checkout</button>
+        <div class="message" v-if="message">Thank you for your purchase!</div>
     </div>
+
 </template>
 
 <style scoped>
@@ -30,7 +48,6 @@ button {
     align-items: center;
     font-size: 18px;
     font-weight: bold;
-    text-decoration: none;
     color: aliceblue;
     background-color: rgb(58, 101, 180);
     border: 2px solid rgb(85, 129, 211);
@@ -58,5 +75,12 @@ img {
     margin-left: 10px;
     width: 10%;
     border-radius: 5%;
+}
+
+.message {
+    color: rgb(85, 129, 211);
+    text-align: center;
+    align-items: center;
+    font-size: 70px;
 }
 </style>

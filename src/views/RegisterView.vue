@@ -1,29 +1,45 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import { useStore } from "../store"
 
 const router = useRouter();
 const store = useStore();
-
 const email = ref('');
 const firstName = ref('');
 const lastName = ref('');
 const password = ref('');
 const password2 = ref('');
 
-const handleRegister = () => {
-    if (password.value === password2.value ) {
-        store.email = email.value;
-        store.firstName = firstName.value;
-        store.lastName = lastName.value;
-        router.push("/movies");
-    } else {
+async function registerByEmail() {
+    if (password.value !== password2.value) {
         alert("Passwords do not match");
+        return;    
+    } 
+    try {
+        const user = (await createUserWithEmailAndPassword(auth, email.value, password.value)).user;
+        await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
+        store.user = user;
+        router.push("/movies");
+        
+    } catch (error) {
+        alert("There was an error creating a user with email!");
     }
-};
+}
+
+async function registerByGoogle() {
+    try {
+        const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+        store.user = user;
+        router.push("/movies");
+    } catch (error) {
+        alert("There was an error creating a user with Google!");
+    }
+}
 </script>
 
 <template>
@@ -31,14 +47,15 @@ const handleRegister = () => {
     <div class="register-container">
         <h1 class="register-title">Register</h1>
 
-        <form @submit.prevent="handleRegister" class="register-form">
-            <input v-model:="firstName" type="text" placeholder="First Name" class="input-field" required />
-            <input v-model:="lastName" type="text" placeholder="Last Name" class="input-field" required />
-            <input v-model:="email" type="email" placeholder="Email" class="input-field" required />
-            <input v-model:="password" type="password" placeholder="Password" class="input-field" required />
-            <input v-model:="password2" type="password" placeholder="Re-enter Password" class="input-field" required />
+        <form @submit.prevent="registerByEmail" class="register-form">
+            <input v-model="firstName" type="text" placeholder="First Name" class="input-field" required />
+            <input v-model="lastName" type="text" placeholder="Last Name" class="input-field" required />
+            <input v-model="email" type="email" placeholder="Email" class="input-field" required />
+            <input v-model="password" type="password" placeholder="Password" class="input-field" required />
+            <input v-model="password2" type="password" placeholder="Re-enter Password" class="input-field" required />
             <button type="submit" class="button register">Register</button>
         </form>
+        <button @click="registerByGoogle()" class="long-button">Register by Google</button>
     </div>
     <Footer />
 </template>
@@ -86,6 +103,23 @@ const handleRegister = () => {
 
 .input-field:focus {
     border-color: rgb(58, 101, 180);
+}
+
+.long-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: aliceblue;
+    background-color: rgb(58, 101, 180);
+    border: 2px solid rgb(85, 129, 211);
+    border-radius: 8px;
+    margin-top: 25px;
+    margin-right: 10px;
+    width: 440px;
+    height: 35px;
 }
 
 .button {

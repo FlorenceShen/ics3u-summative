@@ -31,7 +31,7 @@ onMounted(async () => {
                 <p class="movie-title">{{ movie.title }}</p>
             </div>
             <div class="movie-card">
-                <img class="movie-poster" src="/images/terminionApocalypseMoviePoster.jpg"
+                <img class="movie-poster" src="./images/terminionApocalypseMoviePoster.jpg"
                     alt="Terminion Apocalypse Movie Poster" />
                 <p class="movie-title">Terminion Apocalypse</p>
             </div>

@@ -1,22 +1,32 @@
 <script setup>
+import { useRouter, RouterView } from 'vue-router';
 import { useStore } from '../store';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const store = useStore();
+const router = useRouter();
+
+const logout = () => {
+  store.user = null;
+  signOut(auth);
+  router.push(`/`);
+}
 </script>
 
 <template>
   <div class="container">
     <h1 class="words">Flowflix</h1>
-    <img class="logo" src="/images/image-removebg-preview.png" alt="Flowflix logo" />
+    <img class="logo" src="./images/image-removebg-preview.png" alt="Flowflix logo" />
   </div>
-  <div class="hello words" v-if="store.email">Hello {{ store.firstName }}! </div>
+  <div class="hello words" v-if="store.user">{{ `Hello ${store.user.firstName}!` }}</div>
   <div class="button-container">
-    <RouterLink v-if="!store.email" to="/register" class="button register">Register</RouterLink>
-    <RouterLink v-if="!store.email" to="/login" class="button login">Login</RouterLink>
-    <RouterLink v-if="store.email" to="/movies" class="long-button">Browse Movies</RouterLink>
-    <RouterLink v-if="store.email" to="/cart" class="button">Cart</RouterLink>
-    <RouterLink v-if="store.email" to="/settings" class="button">Settings</RouterLink>
-    <RouterLink v-if="store.email" to="/" class="button ">Logout</RouterLink>
+    <RouterLink v-if="!store.user" to="/register" class="button register">Register</RouterLink>
+    <RouterLink v-if="!store.user" to="/login" class="button login">Login</RouterLink>
+    <RouterLink v-if="store.user" to="/movies" class="long-button">Browse Movies</RouterLink>
+    <RouterLink v-if="store.user" to="/cart" class="button">Cart</RouterLink>
+    <RouterLink v-if="store.user" to="/settings" class="button">Settings</RouterLink>
+    <button v-if="store.user" class="button" @click="logout">Logout</button>
   </div>
 </template>
 

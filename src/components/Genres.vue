@@ -1,15 +1,20 @@
 <script setup>
 import axios from "axios";
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from '../store';
 
 const props = defineProps(["genres"]);
 const store = useStore();
-const route = useRoute();
 const router = useRouter();
 const selectedGenre = ref(28);
 const response = ref(null);
+
+const addToCart = (movie) => {
+  store.cart.set(movie.id, { title: movie.original_title, url: movie.poster_path })
+  localStorage.setItem(`cart_${store.user.email}`, JSON.stringify(Object.fromEntries(store.cart)));
+}
+
 
 async function getMovieByGenre() {
   response.value = await axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_genres=${selectedGenre.value}`);
@@ -34,7 +39,7 @@ onMounted(async () => {
         <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="Movie Poster" class="movie-poster"
           @click="getMovieDetails(movie.id)" />
         <p class="movie-title">{{ movie.title }}</p>
-        <button @click="store.cart.set(movie.id, { title: movie.original_title, url: movie.poster_path })">{{
+        <button @click="addToCart(movie)">{{
           store.cart.has(movie.id) ? "Added" : "Buy" }}</button>
       </div>
     </div>
