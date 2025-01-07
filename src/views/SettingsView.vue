@@ -8,10 +8,13 @@ import { ref } from 'vue';
 const store = useStore();
 console.log(store);
 
+const firstName = store.user.firstName
+const lastName = store.user.lastName
+const displayName = store.user.displayName
 const saveChanges = async () => {
-    store.firstName = firstName.value;
-    store.lastName = lastName.value;
-    await updateProfile(store.user, { displayName: `${firstName.value} ${lastName.value}` });
+    store.user.displayName = displayName.value;
+    store.user.lastName = lastName.value;
+    await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
 };
 </script>
 
@@ -21,9 +24,9 @@ const saveChanges = async () => {
     <div class="info">
         <div class="form-group">
             <div class="info-label">First Name: </div>
-            <input id="firstName" type="text" :value="firstName" class="form-input" />
+            <input id="firstName" type="text" :value="store.user.displayName" class="form-input" />
             <div class="info-label">Last Name: </div>
-            <input id="lastName" type="text" :value="lastName" class="form-input" />
+            <input id="lastName" type="text" v-model="lastName" class="form-input" />
             <div class="info-label">Email: </div>
             <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
             <div class="info-label">Password:</div>
@@ -31,6 +34,8 @@ const saveChanges = async () => {
             <button @click="saveChanges">Save Changes</button>
         </div>
     </div>
+    <!-- for password have to retrieve from firebase using view -->
+     <!-- pinia did not store first name last name? -->
 </template>
 
 <style scoped>

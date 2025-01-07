@@ -1,11 +1,16 @@
 <script setup>
-import { useRouter, RouterView } from 'vue-router';
+import { useRouter} from 'vue-router';
 import { useStore } from '../store';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
 const store = useStore();
 const router = useRouter();
+
+if (store.user !== null) {
+const displayName = store.user.displayName;
+console.log(displayName)
+}
 
 const logout = () => {
   store.user = null;
@@ -19,7 +24,7 @@ const logout = () => {
     <h1 class="words">Flowflix</h1>
     <img class="logo" src="./images/image-removebg-preview.png" alt="Flowflix logo" />
   </div>
-  <div class="hello words" v-if="store.user">{{ `Hello ${store.user.firstName}!` }}</div>
+  <div class="hello words" v-if="store.user">{{ `Hello ${store.user.displayName}!` }}</div>
   <div class="button-container">
     <RouterLink v-if="!store.user" to="/register" class="button register">Register</RouterLink>
     <RouterLink v-if="!store.user" to="/login" class="button login">Login</RouterLink>
