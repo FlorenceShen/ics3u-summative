@@ -14,11 +14,14 @@ const user = auth.currentUser;
 const newPassword = ref('');
 
 const saveChanges = async () => {
+    const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
+    if (!loginEmail) {
+        alert("You have to sign in via email to save changes!");
+        return;
+    }
     try {
-        await signInWithEmailAndPassword(auth, email, password)
-        store.user.firstName = firstName.value;
-        store.user.lastName = lastName.value;
-        await updateProfile(store.user, { displayName: `${firstName.value} ${lastName.value}` });
+        await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
+        store.user = user;
         if (newPassword.value) {
             await updatePassword(user, newPassword.value);
         }
@@ -35,9 +38,9 @@ const saveChanges = async () => {
     <div class="info">
         <div class="form-group">
             <div class="info-label">First Name: </div>
-            <input id="firstName" type="text" :value="firstName" class="form-input" />
+            <input id="firstName" type="text" v-model="firstName" class="form-input" />
             <div class="info-label">Last Name: </div>
-            <input id="lastName" type="text" :value="lastName" class="form-input" />
+            <input id="lastName" type="text" v-model="lastName" class="form-input" />
             <div class="info-label">Email: </div>
             <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
             <div class="info-label">Change Password:</div>
