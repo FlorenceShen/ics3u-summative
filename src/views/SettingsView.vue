@@ -14,12 +14,18 @@ const user = auth.currentUser;
 const newPassword = ref('');
 
 const saveChanges = async () => {
-    store.user.firstName = firstName.value;
-    store.user.lastName = lastName.value;
-    await updateProfile(store.user, { displayName: `${firstName.value} ${lastName.value}` });
-    if (newPassword.value) {
-        await updatePassword(user, newPassword.value);
+    try {
+        await signInWithEmailAndPassword(auth, email, password)
+        store.user.firstName = firstName.value;
+        store.user.lastName = lastName.value;
+        await updateProfile(store.user, { displayName: `${firstName.value} ${lastName.value}` });
+        if (newPassword.value) {
+            await updatePassword(user, newPassword.value);
+        }
+    } catch (error) {
+        alert("There was an error saving changes!");
     }
+
 };
 </script>
 
@@ -35,7 +41,7 @@ const saveChanges = async () => {
             <div class="info-label">Email: </div>
             <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
             <div class="info-label">Change Password:</div>
-            <input id="password" type="password" v-model="newPassword" class="form-input"/>
+            <input id="password" type="password" v-model="newPassword" class="form-input" />
             <button @click="saveChanges">Save Changes</button>
         </div>
     </div>
