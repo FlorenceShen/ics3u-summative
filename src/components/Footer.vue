@@ -13,7 +13,7 @@
         <div class="center">
             <div class="brand">
                 <div class="words"><br> FlowFlix </div>
-                <img class="logo2" src="./images/image-removebg-preview.png" alt="flowflixLogo">
+                <img class="logo2" src="/src/assets/image-removebg-preview.png" alt="flowflixLogo">
             </div>
             <div class="words fakeLink padding">Privacy Policy</div>
             <div class="words fakeLink padding">Terms & Conditions</div>

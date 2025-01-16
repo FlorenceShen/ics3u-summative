@@ -5,6 +5,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { ref } from 'vue';
 
+
 const store = useStore();
 const router = useRouter();
 
@@ -25,7 +26,7 @@ const logout = () => {
 <template>
   <div class="container">
     <h1 class="words">Flowflix</h1>
-    <img class="logo" src="./images/image-removebg-preview.png" alt="Flowflix logo" />
+    <img class="logo" src="/src/assets/image-removebg-preview.png" alt="Flowflix logo" />
   </div>
   <div class="hello words" v-if="store.user">{{ `Hello ${firstName}!` }}</div>
   <div class="button-container">
