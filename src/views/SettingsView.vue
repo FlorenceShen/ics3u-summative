@@ -3,22 +3,26 @@ import Header from '../components/Header.vue';
 import { useStore } from '../store';
 import { updateProfile, updatePassword } from 'firebase/auth';
 import { auth } from "../firebase";
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const store = useStore();
 console.log(store);
 
 const firstName = ref(store.user?.displayName.split(' ')[0]);
-const lastName = ref(store.user?.displayName.split(' ')[1] || '');
+const lastName = ref(store.user?.displayName.split(' ')[1]);
 const user = auth.currentUser;
 const newPassword = ref('');
 
+const loginGoogle = computed(() => {
+    return auth.user?.providerData.some(provider => provider.providerId === 'google.com');
+});
+
 const saveChanges = async () => {
-    const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
-    if (!loginEmail) {
-        alert("You have to sign in via email to save changes!");
-        return;
-    }
+    // const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
+    // if (!loginEmail) {
+    //     alert("You have to sign in via email to save changes!");
+    //     return;
+    // }
     try {
         await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
         store.user = user;
@@ -38,13 +42,13 @@ const saveChanges = async () => {
     <div class="info">
         <div class="form-group">
             <div class="info-label">First Name: </div>
-            <input id="firstName" type="text" v-model="firstName" class="form-input" />
+            <input id="firstName" type="text" v-model="firstName" class="form-input" :disabled="loginGoogle"/>
             <div class="info-label">Last Name: </div>
-            <input id="lastName" type="text" v-model="lastName" class="form-input" />
+            <input id="lastName" type="text" v-model="lastName" class="form-input"  :disabled="loginGoogle"/>
             <div class="info-label">Email: </div>
             <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
             <div class="info-label">Change Password:</div>
-            <input id="password" type="password" v-model="newPassword" class="form-input" />
+            <input id="password" type="password" v-model="newPassword" class="form-input"  :disabled="loginGoogle"/>
             <button @click="saveChanges">Save Changes</button>
         </div>
     </div>
