@@ -3,7 +3,7 @@ import Header from '../components/Header.vue';
 import { useStore } from '../store';
 import { updateProfile, updatePassword } from 'firebase/auth';
 import { auth } from "../firebase";
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const store = useStore();
 console.log(store);
@@ -12,27 +12,31 @@ const firstName = ref(store.user?.displayName.split(' ')[0]);
 const lastName = ref(store.user?.displayName.split(' ')[1]);
 const user = auth.currentUser;
 const newPassword = ref('');
+const loginGoogle = ref(false);
 
-const loginGoogle = computed(() => {
-    return auth.user?.providerData.some(provider => provider.providerId === 'google.com');
+onMounted(async () => {
+    if (user?.providerData.some(provider => provider.providerId === 'google.com')) {
+        loginGoogle.value = true;
+    } else {
+        loginGoogle.value = false;
+    }
 });
 
 const saveChanges = async () => {
-    // const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
-    // if (!loginEmail) {
-    //     alert("You have to sign in via email to save changes!");
-    //     return;
-    // }
-    try {
+    const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
+    if (!loginEmail) {
+        alert("You have to sign in via email to save changes!");
+        return;
+    } try {
         await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
         store.user = user;
         if (newPassword.value) {
             await updatePassword(user, newPassword.value);
+            alert("profile updated successfully!")
         }
     } catch (error) {
         alert("There was an error saving changes!");
     }
-
 };
 </script>
 
@@ -42,13 +46,13 @@ const saveChanges = async () => {
     <div class="info">
         <div class="form-group">
             <div class="info-label">First Name: </div>
-            <input id="firstName" type="text" v-model="firstName" class="form-input" :disabled="loginGoogle"/>
+            <input id="firstName" type="text" v-model="firstName" class="form-input" :disabled="loginGoogle" />
             <div class="info-label">Last Name: </div>
-            <input id="lastName" type="text" v-model="lastName" class="form-input"  :disabled="loginGoogle"/>
+            <input id="lastName" type="text" v-model="lastName" class="form-input" :disabled="loginGoogle" />
             <div class="info-label">Email: </div>
             <input id="email" type="text" :value="store.user.email" class="form-input" readonly />
             <div class="info-label">Change Password:</div>
-            <input id="password" type="password" v-model="newPassword" class="form-input"  :disabled="loginGoogle"/>
+            <input id="password" type="password" v-model="newPassword" class="form-input" :disabled="loginGoogle" />
             <button @click="saveChanges">Save Changes</button>
         </div>
     </div>
