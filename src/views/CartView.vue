@@ -5,9 +5,12 @@ import { ref } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 
 const message = ref(false);
-
 const store = useStore();
 
+const removeCart = (key) => {
+  store.cart.delete(key)
+  localStorage.setItem(`cart_${store.user.email}`, JSON.stringify(Object.fromEntries(store.cart)));
+}
 const checkout = () => {
     store.cart = null;
     localStorage.clear();
@@ -16,8 +19,6 @@ const checkout = () => {
         showMessage.value = false;
     });
 }
-
-
 </script>
 
 <template>
@@ -27,7 +28,7 @@ const checkout = () => {
         <div class="item" v-for="([key, value]) in store.cart">
             <img :src="`https://image.tmdb.org/t/p/w500${value.url}`" />
             <h1>{{ value.title }}</h1>
-            <button @click="store.cart.delete(key)">Remove</button>
+            <button @click="removeCart(key)">Remove</button>
         </div>
         <button @click="checkout">Checkout</button>
         <div class="message" v-if="message">Thank you for your purchase!</div>

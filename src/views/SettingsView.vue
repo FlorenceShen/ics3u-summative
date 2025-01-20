@@ -6,7 +6,6 @@ import { auth } from "../firebase";
 import { ref, onMounted } from 'vue';
 
 const store = useStore();
-console.log(store);
 
 const firstName = ref(store.user?.displayName.split(' ')[0]);
 const lastName = ref(store.user?.displayName.split(' ')[1]);
@@ -23,11 +22,7 @@ onMounted(async () => {
 });
 
 const saveChanges = async () => {
-    const loginEmail = user?.providerData.some(provider => provider.providerId === 'password');
-    if (!loginEmail) {
-        alert("You have to sign in via email to save changes!");
-        return;
-    } try {
+    try {
         await updateProfile(user, { displayName: `${firstName.value} ${lastName.value}` });
         store.user = user;
         if (newPassword.value) {
